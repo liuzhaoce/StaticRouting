@@ -5,7 +5,8 @@
 #include "ether.h"
 #include "types.h"
 
-#define ARPHRD_ETHER 1
+#define ARPHRD_ETHER 0x01
+#define ARPPRO_IP 0X0800
 
 #define ARPOP_REQUEST 1
 #define ARPOP_REPLY 2
@@ -25,5 +26,7 @@ struct ether_arp {
 void handle_arp_packet(iface_info_t *info, char *pkt, int len);
 void arp_send_request(iface_info_t *iface, u32 dst_ip);
 void iface_send_packet_by_arp(iface_info_t *iface, u32 dst_ip, char *pkt, int len);
+
+#define ETHER_ARP_SIZE sizeof(struct ether_arp)
 
 #endif

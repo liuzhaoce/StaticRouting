@@ -17,7 +17,7 @@ class RouterTopo(Topo):
 
 if __name__ == '__main__':
     topo = RouterTopo()
-    net = Mininet(topo = topo, controller = None) 
+    net = Mininet(topo = topo, controller = None)
 
     h1, h2, h3, r1 = net.get('h1', 'h2', 'h3', 'r1')
     h1.cmd('ifconfig h1-eth0 10.0.1.11/24')

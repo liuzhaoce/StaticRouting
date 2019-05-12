@@ -51,6 +51,6 @@ static inline u16 icmp_checksum(struct icmphdr *icmp, int len)
 	return sum;
 }
 
-void icmp_send_packet(const char *in_pkt, int len, u8 type, u8 code);
+void icmp_send_packet(const char *in_pkt, int len, u8 type, u8 code, u32 sip);
 
 #endif

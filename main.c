@@ -3,7 +3,7 @@
 #include "arp.h"
 #include "arpcache.h"
 #include "ip.h"
-#include "icmp.h"
+#include "ip_forwarding.h"
 #include "rtable.h"
 
 #include "log.h"
@@ -21,7 +21,6 @@
 
 ustack_t *instance;
 
-// get the interface according to file descriptor (fd)
 static iface_info_t *fd_to_iface(int fd)
 {
 	iface_info_t *iface = NULL;
@@ -30,18 +29,16 @@ static iface_info_t *fd_to_iface(int fd)
 			return iface;
 	}
 
-	log(ERROR, "Could not find the desired interface "
-			"according to fd %d", fd);
+	fprintf(stderr, "Could not find the desired interface "
+			"according to fd '%d'\n", fd);
 	return NULL;
 }
 
-// handle packet, hand the packet to handle_ip_packet or handle_arp_packet
-// according to ether_type
 void handle_packet(iface_info_t *iface, char *packet, int len)
 {
 	struct ether_header *eh = (struct ether_header *)packet;
 
-	// log(DEBUG, "got packet from %s, %d bytes, proto: 0x%04hx\n", 
+	// log(DEBUG, "got packet from %s, %d bytes, proto: 0x%04hx\n",
 	// 		iface->name, len, ntohs(eh->ether_type));
 	switch (ntohs(eh->ether_type)) {
 		case ETH_P_IP:
@@ -57,11 +54,10 @@ void handle_packet(iface_info_t *iface, char *packet, int len)
 	}
 }
 
-// open the interface to read all the necessary information
 int open_device(const char *dname)
 {
 	int sd = socket(AF_PACKET, SOCK_RAW, htons(ETH_P_ALL));
-	if (sd < 0) { 
+	if (sd < 0) {
 		perror("creating SOCK_RAW failed!");
 		return -1;
 	}
@@ -101,12 +97,10 @@ int open_device(const char *dname)
 		return -1;
 	}
 #endif
-	
+
 	return sd;
 }
 
-// read the information of the interface, including name, ip address, mac
-// address
 int read_iface_info(iface_info_t *iface)
 {
 	int fd = open_device(iface->name);
@@ -133,7 +127,7 @@ int read_iface_info(iface_info_t *iface)
 	iface->ip = ntohl(*(u32 *)&ip);
 	strcpy(iface->ip_str, inet_ntoa(ip));
 
-	// get net mask 
+	// get net mask
 	if (ioctl(fd, SIOCGIFNETMASK, &ifr) < 0) {
 		perror("Get IP mask failed");
 		exit(1);
@@ -144,7 +138,6 @@ int read_iface_info(iface_info_t *iface)
 	return fd;
 }
 
-// find all available interfaces, each interface is named like '*-eth*'
 static void find_available_ifaces()
 {
 	init_list_head(&instance->iface_list);
@@ -181,7 +174,6 @@ static void find_available_ifaces()
 	log(DEBUG, "find the following interfaces: %s.", dev_names);
 }
 
-// read the information of all interfaces, and store them in iface_list
 void init_all_ifaces()
 {
 	find_available_ifaces();
@@ -200,8 +192,6 @@ void init_all_ifaces()
 	}
 }
 
-// initialize all the elements in user stack, including iface_list, routing
-// table, arp cache, etc.
 void init_ustack()
 {
 	instance = malloc(sizeof(ustack_t));
@@ -216,8 +206,6 @@ void init_ustack()
 	load_rtable_from_kernel();
 }
 
-// run user stack, receive packet on each interface, and handle those packet
-// like normal TCP/IP stack
 void ustack_run()
 {
 	struct sockaddr_ll addr;
@@ -251,10 +239,8 @@ void ustack_run()
 				else {
 					iface_info_t *iface = fd_to_iface(instance->fds[i].fd);
 					char *packet = malloc(len);
-					if (!packet) {
-						log(ERROR, "malloc failed when receiving packet.");
+					if (!packet)
 						continue;
-					}
 					memcpy(packet, buf, len);
 					handle_packet(iface, packet, len);
 				}

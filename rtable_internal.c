@@ -122,7 +122,7 @@ static int parse_routing_info(char *buf, int len)
 		if (rtp->rtm_table != 254)
 			continue;
 
-		u32 dest = 0, mask = 0, gw = 0;
+		u32 dest=0, mask=0, gw=0;
 		int flags = 0;
 		char if_name[16];
 
@@ -175,5 +175,5 @@ void load_rtable_from_kernel()
 	int len = get_unparsed_route_info(buf, ROUTE_BATCH_SIZE);
 	int n = parse_routing_info(buf, len);
 
-	fprintf(stdout, "Routing table of %d entries has been loaded.\n", n);
+	fprintf(stdout, "Routing table of %d entries has been loaded.", n);
 }

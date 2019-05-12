@@ -7,6 +7,7 @@
 #include <string.h>
 #include <arpa/inet.h>
 #include <linux/if_packet.h>
+#include <errno.h>
  
 extern ustack_t *instance;
 
@@ -23,6 +24,7 @@ void iface_send_packet(iface_info_t *iface, char *packet, int len)
 
 	if (sendto(iface->fd, packet, len, 0, (const struct sockaddr *)&addr,
 				sizeof(struct sockaddr_ll)) < 0) {
+		printf("errno is %d\n",errno);
  		perror("Send raw packet failed");
 	}
 
