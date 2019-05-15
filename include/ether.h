@@ -18,5 +18,4 @@ struct ether_header {
 
 #define ETHER_HDR_SIZE sizeof(struct ether_header)
 
-
 #endif

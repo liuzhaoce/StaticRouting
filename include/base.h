@@ -25,6 +25,6 @@ typedef struct {
 	u32 mask;
 	char name[16];
 	char ip_str[16];
-} iface_info_t;
+} iface_info_t;//转发数据包的端口
 
 #endif

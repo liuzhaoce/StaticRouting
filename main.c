@@ -3,7 +3,6 @@
 #include "arp.h"
 #include "arpcache.h"
 #include "ip.h"
-#include "ip_forwarding.h"
 #include "rtable.h"
 
 #include "log.h"
@@ -176,10 +175,10 @@ static void find_available_ifaces()
 
 void init_all_ifaces()
 {
-	find_available_ifaces();
+	find_available_ifaces(); //寻找所有可用端口
 
 	instance->fds = malloc(sizeof(struct pollfd) * instance->nifs);
-	bzero(instance->fds, sizeof(struct pollfd) * instance->nifs);
+	bzero(instance->fds, sizeof(struct pollfd) * instance->nifs); //初始化为0
 
 	iface_info_t *iface = NULL;
 	int i = 0;

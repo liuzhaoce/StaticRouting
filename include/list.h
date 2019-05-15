@@ -31,9 +31,9 @@ struct list_head {
 	        pos = q, q = list_entry(pos->member.next, typeof(*q), member))
 
 #define list_for_each_prev(pos, head) \
-	for (pos = (head)->prev; pos != (head); pos = pos->prev)
+	for (pos = (head)->prev; pos != (head); pos = pos->prev) 
 
-static inline void init_list_head(struct list_head *list)
+static inline void init_list_head(struct list_head *list) //初始化等待ARP回复的IP列表头结点 
 {
 	list->next = list->prev = list;
 }

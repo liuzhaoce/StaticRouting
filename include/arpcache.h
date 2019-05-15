@@ -11,33 +11,33 @@
 #define ARP_ENTRY_TIMEOUT 15
 #define ARP_REQUEST_MAX_RETRIES	5
 
-struct cached_pkt {
-	struct list_head list;
-	char *packet;
-	int len;
+struct cached_pkt {  //缓存数据包结构体
+	struct list_head list; //串联不同数据包的链表节点
+	char *packet;          //数据包指针
+	int len;               //长度
 };
 
-struct arp_req {
-	struct list_head list;
-	iface_info_t *iface;
-	u32 ip4;
-	time_t sent;
-	int retries;
-	struct list_head cached_packets;
+struct arp_req {  //arp请求
+	struct list_head list;    //用于串联不同arp_seq的链表节点
+	iface_info_t *iface;      //转发数据包的端口
+	u32 ip4;       //请求对应的ip地址
+	time_t sent;   //arp数据包发送之后经历的时间
+	int retries;   //arp数据包的发送次数
+	struct list_head cached_packets; //目的地址为该ip地址的数据包列表
 };
 
-struct arp_cache_entry {
+struct arp_cache_entry { //arp缓存条目
 	u32 ip4; 	// stored in host byte order
-	u8 mac[ETH_ALEN];
-	time_t added;
-	int valid;
+	u8 mac[ETH_ALEN];//缓存对应的mac地址
+	time_t added;   //在条目中存在的时间
+	int valid;      //是否有效
 };
 
 typedef struct {
-	struct arp_cache_entry entries[MAX_ARP_SIZE];
-	struct list_head req_list;
-	pthread_mutex_t lock;
-	pthread_t thread;
+	struct arp_cache_entry entries[MAX_ARP_SIZE];//ARP缓存条目，总共有32条
+	struct list_head req_list;                   //等待ARP回复的IP列表，指向arp_req
+	pthread_mutex_t lock;                        //ARP查询、更新操作锁
+	pthread_t thread;                            //老化操作对应的线程
 } arpcache_t;
 
 void arpcache_init();

@@ -1,5 +1,4 @@
 #include "ip.h"
-#include "ip_forwarding.h"
 #include "icmp.h"
 #include "packet.h"
 #include "arpcache.h"
@@ -53,24 +52,20 @@ rt_entry_t *longest_prefix_match(u32 dst)
 void ip_send_packet(char *packet, int len)
 {
 	struct iphdr *ip = packet_to_ip_hdr(packet);
-	u32 dst = ntohl(ip->daddr);
-	rt_entry_t *entry = longest_prefix_match(dst);
+	u32 daddr = ntohl(ip->daddr);
+	rt_entry_t *entry = longest_prefix_match(daddr);
+
 	if (!entry) {
 		log(ERROR, "Could not find forwarding rule for IP (dst:"IP_FMT") packet.",
-				HOST_IP_FMT_STR(dst));
+				HOST_IP_FMT_STR(daddr));
 		free(packet);
 		return ;
 	}
 
 	u32 next_hop = entry->gw;
 	if (!next_hop)
-		next_hop = dst;
+		next_hop = daddr;
+	ip->saddr = htonl(entry->iface->ip);
 
-	struct ether_header *eh = (struct ether_header *)packet;
-	eh->ether_type = htons(ETH_P_IP);
-	struct iphdr* iph;
-	iph =(struct iphdr*)(packet + ETHER_HDR_SIZE);
-	iph->saddr = htonl(entry->iface->ip);
-	memcpy(eh->ether_shost, entry->iface->mac, ETH_ALEN);
 	iface_send_packet_by_arp(entry->iface, next_hop, packet, len);
 }

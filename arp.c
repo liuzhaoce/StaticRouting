@@ -4,7 +4,6 @@
 #include "packet.h"
 #include "ether.h"
 #include "arpcache.h"
-
 #include "icmp.h"
 #include "rtable.h"
 #include "ip.h"
@@ -73,19 +72,23 @@ void arp_send_reply(iface_info_t *iface, struct ether_arp *req_hdr)
 	eh_arp->arp_tpa = htonl(my_ip);
 
 	iface_send_packet(iface, packet, ETHER_HDR_SIZE + ETHER_ARP_SIZE);
+
 }
 
 void handle_arp_packet(iface_info_t *iface, char *packet, int len)
 {
+	struct ether_header* eh;
 	struct ether_arp* eh_arp;
+	eh = (struct ether_header*)(packet);
 	eh_arp = (struct ether_arp*)(packet + ETHER_HDR_SIZE);
-	if(ntohs(eh_arp->arp_op) == ARPOP_REQUEST){
+
+	if(ntohs(eh_arp->arp_op) == ARPOP_REQUEST){//arp request
 		if(ntohl(eh_arp->arp_tpa) == iface->ip){
 			arp_send_reply(iface, eh_arp);
 			arpcache_insert(ntohl(eh_arp->arp_spa),eh_arp->arp_sha);
 		}
 	}
-	else if(ntohs(eh_arp->arp_op) == ARPOP_REPLY){
+	else if(ntohs(eh_arp->arp_op) == ARPOP_REPLY){//arp reply
 		if(ntohl(eh_arp->arp_tpa) == iface->ip){
 			arpcache_insert(ntohl(eh_arp->arp_spa), eh_arp->arp_sha);
 		}
@@ -106,6 +109,7 @@ void iface_send_packet_by_arp(iface_info_t *iface, u32 dst_ip, char *packet, int
 
 	u8 dst_mac[ETH_ALEN];
 	int found = arpcache_lookup(dst_ip, dst_mac);
+
 	if (found) {
 		memcpy(eh->ether_dhost, dst_mac, ETH_ALEN);
 		iface_send_packet(iface, packet, len);

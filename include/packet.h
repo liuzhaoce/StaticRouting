@@ -3,6 +3,6 @@
 
 #include "base.h"
 
-void iface_send_packet(iface_info_t *iface, char *packet, int len);
+void iface_send_packet(iface_info_t *iface, char *packet, int len);//端口转发数据包函数
 
 #endif

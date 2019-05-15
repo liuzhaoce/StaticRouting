@@ -6,7 +6,7 @@
 #include "types.h"
 
 #define ARPHRD_ETHER 0x01
-#define ARPPRO_IP 0X0800
+#define ARPPRO_IP 0x0800
 
 #define ARPOP_REQUEST 1
 #define ARPOP_REPLY 2

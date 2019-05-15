@@ -27,7 +27,7 @@ struct icmphdr {
 #define ICMP_HDR_SIZE	sizeof(struct icmphdr)
 #define ICMP_COPIED_DATA_LEN	8
 
-#define ICMP_ECHOREQUEST		8       /* Echo Request					*/
+#define ICMP_ECHOREQUEST		    8       /* Echo Request					*/
 #define ICMP_ECHOREPLY          0       /* Echo Reply                   */
 #define ICMP_DEST_UNREACH       3       /* Destination Unreachable      */
 #define ICMP_TIME_EXCEEDED      11      /* Time Exceeded                */
@@ -51,6 +51,6 @@ static inline u16 icmp_checksum(struct icmphdr *icmp, int len)
 	return sum;
 }
 
-void icmp_send_packet(const char *in_pkt, int len, u8 type, u8 code, u32 sip);
+void icmp_send_packet(const char *in_pkt, int len, u8 type, u8 code);
 
 #endif
