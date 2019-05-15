@@ -1,0 +1,94 @@
+
+\documentclass[12pt,a4paper]{ctexart}%支持中文
+	\usepackage[top=2cm, bottom=2cm, left=2cm, right=2cm]{geometry}%调节页边距
+
+	\usepackage{algorithm}
+	\usepackage{algorithmicx}
+	\usepackage{algpseudocode}%支持伪代码
+	
+	\usepackage{tikz}
+	\usetikzlibrary{arrows,shapes,shadows}%使用tikz工具包画图
+
+	\usepackage{amsmath} 
+	\usepackage{amssymb}%编辑数学公式
+	
+	\usepackage{graphicx}%支持图片插入
+	
+	\usepackage{multirow}%支持复杂表格
+	
+\title{Project2 :Static routing forwarding}
+\author{刘昭策 2018E8018661085\\
+	黄文韬 2018E8018661100}
+\date{May , 2019}%作者名、标题名、日期
+
+\CTEXsetup[format={\Large\bfseries}]{section}%CTEX中标题左对齐
+\renewcommand\thesubsection{\roman{subsection}}%设置subsection按小写roman字符编号
+
+\setlength{\parindent}{2em}%首行缩进
+%\setlength{\parskip}{0.5em}%段落间距
+%\setlength{\lineskip}{0.5em}%行间距
+
+\floatname{algorithm}{算法}
+\renewcommand{\algorithmicrequire}{\textbf{Input:}}
+\renewcommand{\algorithmicensure}{\textbf{Output:}}%输入输出
+
+\begin{document}	
+	\maketitle
+	\pagestyle{plain}%页码在页下部居中且没有页眉
+%---------------------------section 1--------------------------------
+	\section*{一、实验目的}
+		\begin{itemize}
+			\item 理解IP、ARP、ICMP协议的工作机制
+			\item 实现IP地址查找与数据包转发
+			\item 实现ARP请求和应答、ARP数据包缓存管理
+			\item 实现ICMP消息的发送
+			\item 学习ping，traceroute等网络命令的基本功能和使用方法
+		\end{itemize}
+		
+	\section*{二、实验环境}
+	Ubuntu16.04 + Mininet
+	
+	\section*{三、实验内容}
+		\subsection{IP协议相关}
+		主要内容：最长前缀匹配规则
+				
+		\subsection{ARP协议相关}
+		主要内容：IP-Mac地址映射基本概念，ARP请求、ARP回应数据包格式，ARP条目查询
+		
+		\subsection{ICMP协议相关}
+		主要内容：实验中涉及到的几种ICMP数据包格式（路由表查找失败、ARP查询失败、TTL值减为0、收到ping本端口的数据包）
+	
+	\section*{四、实验流程}
+		\setcounter{subsection}{0}
+		
+		\subsection{处理IP数据包}
+		判断是否为ICMP echo请求，否则利用最长前缀匹配规则转发IP包，转发IP包之前需要检查TTL，更新checksum等
+		
+		\subsection{发送ICMP数据包}
+		满足下述四个条件时发送ICMP数据包\\
+		1，TTL值为0\\
+		2，查找不到路由表条目\\
+		3.收到ping本端口的包\\
+		4，ARP查询失败
+		
+		
+		\subsection{ARP缓存管理}
+		在没有触发前三个条件时，将数据包添加到ARP缓存的等待队列中，并发送ARP请求\\
+		注意缓存管理要避免死锁的出现（lock unlock）
+		
+		\subsection{处理ARP请求和应答}
+		收到ARP数据包时，先判断是ARP请求还是ARP应答
+		
+		处理ARP请求数据包时，先发送ARP回复数据包，再将IP-Mac地址映射对插入ARP缓存中，并查找等待队列中是否有数据包符合地址映射对，如有，则将对应的数据包发送
+		
+		处理ARP回复数据包时，同理也先将IP-Mac地址映射对插入ARP缓存中，再查找等待队列中是否有数据包符合地址映射对，如有，则将对应的数据包发送
+		
+		
+			
+	\section*{五、实验结果与分析}
+		\setcounter{subsection}{0}
+		\subsection{实验一结果截图与分析}
+	
+		\subsection{实验二结果截图与分析}
+		
+\end{document}
