@@ -17,7 +17,7 @@ class RouterTopo(Topo):
 
 if __name__ == '__main__':
     topo = RouterTopo()
-    net = Mininet(topo = topo, controller = None) 
+    net = Mininet(topo = topo, controller = None)
 
     h1, h2, r1, r2 = net.get('h1', 'h2', 'r1', 'r2')
     h1.cmd('ifconfig h1-eth0 10.0.1.11/24')
@@ -37,11 +37,11 @@ if __name__ == '__main__':
     r2.cmd('ifconfig r2-eth0 10.0.2.1/24')
     r2.cmd('ifconfig r2-eth1 10.0.3.2/24')
     r2.cmd('route add -net 10.0.1.0 netmask 255.255.255.0 gw 10.0.3.1 dev r2-eth1')
-	
+
     for r in (r1, r2):
-	r.cmd('./scripts/disable_arp.sh')
-	r.cmd('./scripts/disable_icmp.sh')
-	r.cmd('./scripts/disable_ip_forward.sh')
+        r.cmd('./scripts/disable_arp.sh')
+        r.cmd('./scripts/disable_icmp.sh')
+        r.cmd('./scripts/disable_ip_forward.sh')
 
     net.start()
     CLI(net)
